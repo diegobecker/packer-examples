@@ -1,0 +1,37 @@
+{
+    "variables": {
+        "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+        "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}"
+    },
+    "builders": [{
+        "type": "amazon-ebs",
+        "access_key": "{{user `aws_access_key`}}",
+        "secret_key": "{{user `aws_secret_key` }}",
+        "region": "us-east-1",
+        "source_ami": "ami-04751c628226b9b59",
+        "instance_type": "t2.micro",
+        "ssh_username": "ubuntu",
+        "ami_name": "packer-example {{timestamp}}"
+    }],
+    "provisioners": [
+        {
+            "type": "file",
+            "source": "index.html",
+            "destination": "/tmp/index.html"
+        },
+        {
+            "type": "shell",
+            "inline": [
+                "sudo mkdir -p /var/www/website",
+                "sudo mv /tmp/index.html /var/www/website"
+            ]
+        },
+        {
+            "type": "shell",
+            "scripts": [
+                "install.sh",
+                "post-install.sh"
+            ]
+        }
+    ]
+}
